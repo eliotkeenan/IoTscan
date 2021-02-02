@@ -1,0 +1,1 @@
+The project will develop an application for scanning a local network for IoT devices; the application will produce reports according to a Common Vulnerabilities and Exposures** framework. Particular weight will be given to the severity of the identified vulnerability inorder to suggest detailed steps on remedial action
