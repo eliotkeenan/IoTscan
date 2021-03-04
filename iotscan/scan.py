@@ -16,15 +16,13 @@ for host in nm.all_hosts():
 
         osdata.append(nm[host]['osmatch'][i])
 
-
-    print(osdata)
-
     print('Host : %s' % host)
     print('State : %s' % nm[host].state())
 
     os_names = []
     os_accuracy = []
     os_types = []
+    # extract os data
     for unpack_osdata in osdata:
         for k, v in unpack_osdata.items():
             if k == 'name':
@@ -32,12 +30,13 @@ for host in nm.all_hosts():
             if k == 'accuracy':
                 os_accuracy.append(v)
             if k == 'osclass':
-                print(v[0])
+                # due to the ridiculous number of embedded dicts, lists etc
+                # this seems the best way to do it
                 os_types.append(v[0]['type'])
 
-    print(os_names)
-    print(os_accuracy)
-    print(os_types)
+    print("\nDevice information:\n")
+    for i in range(0, len(os_names)):
+        print("Name: %s\nAccuracy: %s\nType: %s\n" % (os_names[i], os_accuracy[i], os_types[i]))
 
     for proto in nm[host].all_protocols():
         print("\nProtocol: %s" % proto)
