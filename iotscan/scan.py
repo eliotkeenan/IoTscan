@@ -1,5 +1,10 @@
 import nmap
 
+# set up colourised output
+from colorama import init
+from colorama import Fore, Back, Style
+init()
+
 nm = nmap.PortScanner()
 
 # Scan IoTGoat instance
@@ -16,8 +21,8 @@ for host in nm.all_hosts():
 
         osdata.append(nm[host]['osmatch'][i])
 
-    print('Host : %s' % host)
-    print('State : %s' % nm[host].state())
+    print('Host: %s' % host)
+    print('State: %s' % nm[host].state())
 
     os_names = []
     os_accuracy = []
@@ -36,11 +41,22 @@ for host in nm.all_hosts():
 
     print("\nDevice information:\n")
     for i in range(0, len(os_names)):
-        print("Name: %s\nAccuracy: %s\nType: %s\n" % (os_names[i], os_accuracy[i], os_types[i]))
+        print("Name: %s\nAccuracy: %s\nType: %s\n" % (os_names[i], os_accuracy[i],
+                                                      os_types[i]))
 
     for proto in nm[host].all_protocols():
-        print("\nProtocol: %s" % proto)
+        print("Protocol: %s" % proto)
 
         lport = nm[host][proto].keys()
         for port in lport:
             print("port: %s\tstate: %s" % (port, nm[host][proto][port]['state']))
+
+    is_iot = 0
+    print("\n%s Report:" % host)
+    for os_type in os_types:
+        if os_type == "general purpose" or os_type == "phone":
+            is_iot = 1
+
+    if is_iot:
+        print(Fore.LIGHTGREEN_EX + "Very likely an IoT device")
+        print(Style.RESET_ALL, end='')
