@@ -9,18 +9,18 @@ nm = nmap.PortScanner()
 
 # IoT device types (nmap)
 iot_types = ["phone", "game console", "media device", "PDA", "printer", "webcam",
-             "VoIP phone", "specialized"]
+             "VoIP phone", "security-misc", "power-device", "specialized"]
 
 # Scan IoTGoat instance
 # use -T5 for speed (add aggression level later as optional flag)
 # needs to be run as root due to -O
-nm.scan("127.0.0.1", arguments="-A -O -T5")
+nm.scan("10.0.2.2", arguments="-A -O -T5")
 
 for host in nm.all_hosts():
     osdata = []
     for i in range(0, len(nm[host]['osmatch'])):
-        # get top five results
-        if i > 4:
+        # get top six results
+        if i > 5:
             break
 
         osdata.append(nm[host]['osmatch'][i])
@@ -56,10 +56,11 @@ for host in nm.all_hosts():
         print("Protocol: %s\n" % proto)
 
         lport = nm[host][proto].keys()
-        for port in lport:
-            print("port: %s\tstate: %s" % (port, nm[host][proto][port]['state']))
 
-    is_iot = 0
+        for port in lport:
+            print("port: %s\tstate: %s\ttype: %s" %
+                  (port, nm[host][proto][port]['state'], nm[host][proto][port]['name']))
+
     print("\n%s Report:" % host)
 
     iot_num = 0
@@ -73,5 +74,7 @@ for host in nm.all_hosts():
     if iot_num > noniot_num:
         print(Fore.LIGHTGREEN_EX + "Very likely an IoT device")
         print(Style.RESET_ALL, end='')
-    else:
+    elif iot_num == noniot_num:
         print("Might be an IoT device")
+    else:
+        print("Probably not an IoT device")
