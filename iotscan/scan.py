@@ -2,21 +2,25 @@ import nmap
 
 # set up colourised output
 from colorama import init
-from colorama import Fore, Back, Style
+from colorama import Fore, Style
 init()
 
 nm = nmap.PortScanner()
 
+# IoT device types (nmap)
+iot_types = ["phone", "game console", "media device", "PDA", "printer", "webcam",
+             "VoIP phone", "specialized"]
+
 # Scan IoTGoat instance
 # use -T5 for speed (add aggression level later as optional flag)
 # needs to be run as root due to -O
-nm.scan("10.0.2.3", arguments="-A -O -T5")
+nm.scan("49.212.205.103", arguments="-A -O -T5")
 
 for host in nm.all_hosts():
     osdata = []
     for i in range(0, len(nm[host]['osmatch'])):
-        # get top three results
-        if i > 2:
+        # get top five results
+        if i > 4:
             break
 
         osdata.append(nm[host]['osmatch'][i])
@@ -41,11 +45,15 @@ for host in nm.all_hosts():
 
     print("\nDevice information:\n")
     for i in range(0, len(os_names)):
-        print("Name: %s\nAccuracy: %s\nType: %s\n" % (os_names[i], os_accuracy[i],
-                                                      os_types[i]))
+        if os_types[i] in iot_types:
+            print(f"Name: %s\nAccuracy: %s\nType: {Fore.LIGHTRED_EX}%s{Style.RESET_ALL}\n"
+                  % (os_names[i], os_accuracy[i], os_types[i]))
+        else:
+            print("Name: %s\nAccuracy: %s\nType: %s\n" % (os_names[i], os_accuracy[i],
+                                                          os_types[i]))
 
     for proto in nm[host].all_protocols():
-        print("Protocol: %s" % proto)
+        print("Protocol: %s\n" % proto)
 
         lport = nm[host][proto].keys()
         for port in lport:
@@ -53,10 +61,17 @@ for host in nm.all_hosts():
 
     is_iot = 0
     print("\n%s Report:" % host)
-    for os_type in os_types:
-        if os_type == "general purpose" or os_type == "phone":
-            is_iot = 1
 
-    if is_iot:
+    iot_num = 0
+    noniot_num = 0
+    for os_type in os_types:
+        if os_type in iot_types:
+            iot_num += 1
+        else:
+            noniot_num += 1
+
+    if iot_num > noniot_num:
         print(Fore.LIGHTGREEN_EX + "Very likely an IoT device")
         print(Style.RESET_ALL, end='')
+    else:
+        print("Might be an IoT device")
