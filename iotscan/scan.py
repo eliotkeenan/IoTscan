@@ -14,7 +14,7 @@ iot_types = ["phone", "game console", "media device", "PDA", "printer", "webcam"
 # Scan IoTGoat instance
 # use -T5 for speed (add aggression level later as optional flag)
 # needs to be run as root due to -O
-nm.scan("49.212.205.103", arguments="-A -O -T5")
+nm.scan("127.0.0.1", arguments="-A -O -T5")
 
 for host in nm.all_hosts():
     osdata = []
